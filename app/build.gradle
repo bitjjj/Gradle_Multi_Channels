@@ -1,0 +1,81 @@
+import java.util.regex.Pattern
+
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 20
+    buildToolsVersion '20.0.0'
+
+    defaultConfig {
+        applicationId "com.example.bitjjj.myapplication"
+        minSdkVersion 15
+        targetSdkVersion 20
+        versionCode 1
+        versionName "1.0"
+    }
+    signingConfigs {
+        release {
+            storeFile file("testkey.keystore")
+            storePassword "123456"
+            keyAlias "testkey.keystore"
+            keyPassword "123456"
+        }
+    }
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+            runProguard false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    productFlavors {
+        wandoujia{
+
+        }
+        qihu{
+
+        }
+        baidu{
+
+        }
+        googleplay{
+
+        }
+    }
+
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.android.support:support-v4:20.0.0'
+    compile project(':appLib')
+}
+
+/*android.applicationVariants.all{ variant ->
+    println "${variant.productFlavors[0].name}"
+    variant.processManifest.doLast{
+        copy{
+            from("${buildDir}/manifests"){
+                include "${variant.dirName}/AndroidManifest.xml"
+            }
+            into("${buildDir}/manifests/$variant.name")
+
+            filter{
+                String line -> line.replaceAll("UMENG_CHANNEL_VALUE", "${variant.productFlavors[0].name}")
+            }
+
+            variant.processResources.manifestFile = file("${buildDir}/manifests/${variant.name}/${variant.dirName}/AndroidManifest.xml")
+        }
+    }
+}*/
+
+android.applicationVariants.all { variant ->
+    variant.processManifest.doLast {
+        def manifestFile = "${buildDir}/intermediates/manifests/${variant.dirName}/AndroidManifest.xml"
+        def manifest = file(manifestFile)
+        def updatedContent = manifest.getText('UTF-8').replaceAll("UMENG_CHANNEL_VALUE", "${variant.productFlavors[0].name}")
+        manifest.write(updatedContent, 'UTF-8')
+        variant.processResources.manifestFile = manifest
+    }
+}

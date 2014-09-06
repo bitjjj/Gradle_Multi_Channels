@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">My Module</string>
+    <string name="string1">Test Dep1....</string>
+    <string name="string2">Test Dep2....</string>
+</resources>
